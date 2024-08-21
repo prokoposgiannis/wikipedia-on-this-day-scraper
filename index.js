@@ -16,6 +16,7 @@ const main = async (url) => {
         const content = [];
 
         item.childNodes.forEach( node => {
+          
             if (node.nodeType === Node.ELEMENT_NODE && node.tagName.toLowerCase() === 'a') {
                 // If the node is an <a> element, store its href and text
                 content.push({
@@ -25,7 +26,7 @@ const main = async (url) => {
                 });
               } else if (node.nodeType === Node.TEXT_NODE) {
                 // If the node is a text node, store the text content
-                const text = node.textContent.trim();
+                const text = node.textContent;
                 if (text.length > 0) {
                   content.push({
                     type: 'text',
