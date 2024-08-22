@@ -7,7 +7,7 @@ const main = async (url) => {
   const page = await browser.newPage();
   await page.goto(url);
 
-  const allLists = await page.evaluate(() => {
+  const allEvents = await page.evaluate(() => {
     const lists = document.querySelectorAll("ul");
 
     return Array.from(lists).map((list) => {
@@ -50,12 +50,79 @@ const main = async (url) => {
           }
         });
 
-        return content;
+        return content.slice(24, 25)[0];
       });
     });
   });
 
-  console.log(allLists.slice(24, 25)[0]);
+  async function imageGetter (url) {
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+
+    // Navigate to the desired webpage
+    await page.goto(`"${url}"`);
+
+    // Extract the src attribute of the first <img> tag
+    const firstImgSrc = await page.evaluate(() => {
+        const firstImg = document.querySelector('img');
+        if (firstImg) {
+            console.log(firstImg.src)
+            return firstImg.src;
+        }
+        return null;
+    });
+
+    // Output the src of the first <img> tag
+    console.log(firstImgSrc ? `First image src: ${firstImgSrc}` : 'No <img> tag found');
+
+    // Close the browser
+    await browser.close();
+  }
+
+  async function eventModifier (element) {
+    let eventData = {
+      anchor: "No href",
+      year: "No year",
+      text: "No text",
+      id: 0,
+    };
+    let dateGranted = false;
+    let anchorGranted = false;
+    let idCounter = 0;
+    const eventAllTexts= [];
+    
+    element.forEach((el) => {
+      if (el.type === "anchor") {
+        if (!dateGranted) {
+          dateGranted = true;
+          eventData.year = el.text;
+        } else if (dateGranted && !anchorGranted) {
+          anchorGranted = true;
+          eventData.anchor = el.href ?? "No href";
+
+
+
+
+          eventAllTexts.push(el.text);
+        } else if (dateGranted && anchorGranted) {
+          eventAllTexts.push(el.text);
+        }
+      }
+      else if (el.type === "text") {
+        eventAllTexts.push(el.text);
+      }
+      eventData.text = eventAllTexts.join("").slice(2);
+      eventData.id = idCounter++;
+    })
+    return eventData;
+  }
+  
+
+  const eventsCompleted = allEvents.forEach(el => {
+    eventModifier(el)
+  })
+
+  // console.log(allEvents.slice(24, 25)[0]);
   await browser.close();
 };
 
