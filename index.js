@@ -50,79 +50,72 @@ const main = async (url) => {
           }
         });
 
-        return content.slice(24, 25)[0];
+        return content;
       });
     });
   });
 
-  async function imageGetter (url) {
-    const browser = await puppeteer.launch();
+  const imageGetter = async (url) => {
     const page = await browser.newPage();
+    await page.goto(url);
 
-    // Navigate to the desired webpage
-    await page.goto(`"${url}"`);
-
-    // Extract the src attribute of the first <img> tag
     const firstImgSrc = await page.evaluate(() => {
         const firstImg = document.querySelector('img');
-        if (firstImg) {
-            console.log(firstImg.src)
-            return firstImg.src;
-        }
-        return null;
+        return firstImg ? firstImg.src : null;
     });
 
-    // Output the src of the first <img> tag
-    console.log(firstImgSrc ? `First image src: ${firstImgSrc}` : 'No <img> tag found');
+    await page.close(); 
+    return firstImgSrc || "No ImageUrl"; 
+  };
 
-    // Close the browser
-    await browser.close();
-  }
+  let idCounter = 0;
 
-  async function eventModifier (element) {
+  async function eventModifier(element) {
+    if (!element) {
+      return null;  
+    }
+
     let eventData = {
       anchor: "No href",
+      imageUrl: "No ImageUrl",
       year: "No year",
       text: "No text",
       id: 0,
     };
+
     let dateGranted = false;
     let anchorGranted = false;
-    let idCounter = 0;
-    const eventAllTexts= [];
-    
+    const eventAllTexts = [];
+
     element.forEach((el) => {
-      if (el.type === "anchor") {
-        if (!dateGranted) {
-          dateGranted = true;
-          eventData.year = el.text;
-        } else if (dateGranted && !anchorGranted) {
-          anchorGranted = true;
-          eventData.anchor = el.href ?? "No href";
-
-
-
-
-          eventAllTexts.push(el.text);
-        } else if (dateGranted && anchorGranted) {
+      if (el && el.type) {  
+        if (el.type === "anchor") {
+          if (!dateGranted) {
+            dateGranted = true;
+            eventData.year = el.text;
+          } else if (dateGranted && !anchorGranted) {
+            anchorGranted = true;
+            eventData.anchor = el.href ?? "No href";
+            eventAllTexts.push(el.text);
+          } else if (dateGranted && anchorGranted) {
+            eventAllTexts.push(el.text);
+          }
+        } else if (el.type === "text") {
           eventAllTexts.push(el.text);
         }
+        eventData.text = eventAllTexts.join("").slice(2);
       }
-      else if (el.type === "text") {
-        eventAllTexts.push(el.text);
-      }
-      eventData.text = eventAllTexts.join("").slice(2);
-      eventData.id = idCounter++;
-    })
+    });
+    
+    eventData.id = idCounter++; 
+    eventData.imageUrl = await imageGetter(eventData.anchor);
     return eventData;
   }
-  
 
-  const eventsCompleted = allEvents.forEach(el => {
-    eventModifier(el)
-  })
+  const eventsCompleted = await Promise.all(allEvents.slice(24, 25)[0].map(el => eventModifier(el)));
 
-  // console.log(allEvents.slice(24, 25)[0]);
+  console.log(eventsCompleted);
+
   await browser.close();
 };
 
