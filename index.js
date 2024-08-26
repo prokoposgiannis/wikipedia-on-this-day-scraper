@@ -81,11 +81,13 @@ const main = async (url) => {
       year: "No year",
       text: "No text",
       id: 0,
+      tags: []
     };
 
     let dateGranted = false;
     let anchorGranted = false;
     const eventAllTexts = [];
+    eventData.tags = element;
 
     element.forEach((el) => {
       if (el && el.type) {  
@@ -109,6 +111,7 @@ const main = async (url) => {
     
     eventData.id = idCounter++; 
     eventData.imageUrl = await imageGetter(eventData.anchor);
+    // eventData.tags.map(e=>console.log(e))
     return eventData;
   }
 
