@@ -1,6 +1,7 @@
 'use strict';
 
 import puppeteer from 'puppeteer';
+import { setDoc, doc, db } from './firebase.js'
 
 const main = async (url) => {
   const browser = await puppeteer.launch();
@@ -59,13 +60,27 @@ const main = async (url) => {
     const page = await browser.newPage();
     await page.goto(url);
 
-    const firstImgSrc = await page.evaluate(() => {
-        const firstImg = document.querySelector('img');
-        return firstImg ? firstImg.src : null;
+    const secondImgSrc = await page.evaluate(() => {
+        const allImgs = document.querySelectorAll('img');
+        const mapImg  = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/WMA_button2b.png/17px-WMA_button2b.png"
+        const mapImg2 = "https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Question_book-new.svg/50px-Question_book-new.svg.png"
+        const mapImg3 = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Commons-logo.svg/12px-Commons-logo.svg.png"
+        const mapImg4 = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Commons-logo.svg/40px-Commons-logo.svg.png"
+        if (allImgs[3].src !== mapImg) {
+          return allImgs.length >= 5 ? allImgs[4].src : null;
+        } else if (allImgs[3].src !== mapImg2) {
+          return allImgs.length >= 5 ? allImgs[4].src : null;
+        } else if (allImgs[3].src !== mapImg3) {
+          return allImgs.length >= 5 ? allImgs[4].src : null;
+        } else if (allImgs[3].src !== mapImg4) {
+          return allImgs.length >= 5 ? allImgs[4].src : null;
+        } else {
+          return allImgs.length >= 4 ? allImgs[3].src : null;
+        }
     });
 
     await page.close(); 
-    return firstImgSrc || "No ImageUrl"; 
+    return secondImgSrc || "No ImageUrl"; 
   };
 
   let idCounter = 0;
@@ -111,13 +126,28 @@ const main = async (url) => {
     
     eventData.id = idCounter++; 
     eventData.imageUrl = await imageGetter(eventData.anchor);
-    // eventData.tags.map(e=>console.log(e))
     return eventData;
   }
 
   const eventsCompleted = await Promise.all(allEvents.slice(24, 25)[0].map(el => eventModifier(el)));
 
-  console.log(eventsCompleted);
+  async function eventUploader(day, list) {
+    let eventNumber = 1;
+    for (const event of list) {
+      await setDoc(doc(db, "events", `${day}${eventNumber > 9 ? "":"0"}${eventNumber}`), {
+        day,
+        anchor: event.anchor,
+        imageUrl: event.imageUrl,
+        year: event.year,
+        text: event.text,
+        id: event.id,
+        tags: event.tags,
+      });
+      eventNumber++;
+    }
+  }
+
+  eventUploader("2008", eventsCompleted)
 
   await browser.close();
 };
