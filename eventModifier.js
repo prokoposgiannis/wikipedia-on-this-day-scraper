@@ -2,7 +2,6 @@ import { imageGetter } from "./imageGetter.js";
 export async function eventModifier(element, browser) {
     let idCounter = 0;
 
-    // console.log(element)
     if (!element) {
       return null;  
     }

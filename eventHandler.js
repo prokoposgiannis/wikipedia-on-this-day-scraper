@@ -1,8 +1,6 @@
 'use strict';
-// import puppeteer from 'puppeteer';
 import { eventModifier } from './eventModifier.js';
 import { eventUploader } from './eventUploader.js';
-// const browser = await puppeteer.launch();
 
 export const eventHandler = async (url, dateId, browser) => {
   const page = await browser.newPage();
@@ -55,11 +53,7 @@ export const eventHandler = async (url, dateId, browser) => {
     });
   });
 
-//   const eventsCompleted = await Promise.all(allEvents.slice(27,28)[0].map(el => eventModifier(el)));
   const eventsCompleted = await Promise.all(allEvents.slice(0,1)[0].map(el => eventModifier(el, browser)));
-
-  // console.log(JSON.stringify(allEvents.slice(27,28), null, 2))
-  // console.log(JSON.stringify(allEvents.slice(0,1)[0], null, 2))
 
   eventUploader(dateId, eventsCompleted)
 

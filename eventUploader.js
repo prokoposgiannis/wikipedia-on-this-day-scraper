@@ -3,7 +3,6 @@ import { setDoc, doc, db } from './firebase.js'
 export async function eventUploader(day, list) {
     let eventNumber = 1;
     for (const event of list) {
-        // console.log(event)
       await setDoc(doc(db, "events", `${day}${eventNumber > 9 ? "":"0"}${eventNumber}`), {
         day,
         anchor: event.anchor,
