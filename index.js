@@ -1,7 +1,6 @@
 import puppeteer from 'puppeteer';
 import { eventHandler } from './eventHandler.js'
 const browser = await puppeteer.launch();
-// import { test } from "./test.js"
 
 const monthNames = [
     ['Ιανουαρίου', 31], ['Φεβρουαρίου', 29], ['Μαρτίου', 31], ['Απριλίου', 30], ['Μαΐου', 31], ['Ιουνίου', 30],
