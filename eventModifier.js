@@ -1,5 +1,5 @@
 import { imageGetter } from "./imageGetter.js";
-export async function eventModifier(element) {
+export async function eventModifier(element, browser) {
     let idCounter = 0;
 
     // console.log(element)
@@ -41,7 +41,7 @@ export async function eventModifier(element) {
     });
     
     eventData.id = idCounter++; 
-    eventData.imageUrl = await imageGetter(eventData.anchor);
+    eventData.imageUrl = await imageGetter(eventData.anchor, browser);
     return eventData;
   }
 

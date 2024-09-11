@@ -1,12 +1,10 @@
 import puppeteer from 'puppeteer';
 
-export const imageGetter = async (url) => {
-    // console.log("IMAGE GETTER--->", url)
-    const browser = await puppeteer.launch();
+export const imageGetter = async (url, browser) => {
     const page = await browser.newPage();
     await page.goto(url);
 
-    const secondImgSrc = await page.evaluate(() => {
+    const imgSrc = await page.evaluate(() => {
         const allImgs = document.querySelectorAll('img');
         const notUsableImageLinks = [
           "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/WMA_button2b.png/17px-WMA_button2b.png",
@@ -18,7 +16,11 @@ export const imageGetter = async (url) => {
           "https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Symbol_support_vote.svg/19px-Symbol_support_vote.svg.png",
           "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Ambox_wikify.svg/40px-Ambox_wikify.svg.png",
           "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Tango-nosources.svg/40px-Tango-nosources.svg.png",
-          "https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Icono_de_traducci%C3%B3n.svg/38px-Icono_de_traducci%C3%B3n.svg.png"
+          "https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Icono_de_traducci%C3%B3n.svg/38px-Icono_de_traducci%C3%B3n.svg.png",
+          "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Ambox_scales.svg/40px-Ambox_scales.svg.png",
+          "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Sound-icon.svg/20px-Sound-icon.svg.png",
+          "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Wiki_letter_w.svg/30px-Wiki_letter_w.svg.png",
+          "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Edit-clear.svg/40px-Edit-clear.svg.png"
         ]
 
         let imageIndex = 3;
@@ -31,5 +33,5 @@ export const imageGetter = async (url) => {
     });
 
     await page.close(); 
-    return secondImgSrc || "No ImageUrl"; 
+    return imgSrc || "No ImageUrl"; 
   };
