@@ -14,6 +14,8 @@ export const eventHandler = async (url, dateId, browser) => {
       return listItems.map((item) => {
         const content = [];
 
+
+
         item.childNodes.forEach(node => {
           if (node.nodeType === Node.ELEMENT_NODE) {
             if (node.tagName.toLowerCase() === 'a') {
@@ -54,6 +56,10 @@ export const eventHandler = async (url, dateId, browser) => {
   });
 
   const eventsCompleted = await Promise.all(allEvents.slice(0,1)[0].map(el => eventModifier(el, browser)));
+
+  // console.log(eventsCompleted)
+
+  // console.log(allEvents.slice(0,1)[0])
 
   eventUploader(dateId, eventsCompleted)
 

@@ -8,16 +8,25 @@ const monthNames = [
 ];
 
 async function runEventHandlers(fromMonth, toMonth) {
-  for (let month = fromMonth; month < toMonth; month++) {
-    for (let day = 1; day <= 5; day++) {
+  for (let month = fromMonth-1; month < toMonth-1; month++) {
+    for (let day = 1; day <= monthNames[month][1]; day++) {
       let date = `https://el.wikipedia.org/api/rest_v1/page/html/${day}_${monthNames[month][0]}`;
       let dateId = `${day > 9 ? day : `0${day}`}${month > 8 ? month+1 : `0${month+1}`}`;
-      eventHandler(date, dateId, browser)
+      console.log("Initiating date:", dateId);
+      // await eventHandler(date, dateId, browser)
+      console.log("Done with date:", dateId);
     }
   }
 }
 
-runEventHandlers(0,1);
+// await runEventHandlers(2,3);
+
+await eventHandler("https://el.wikipedia.org/api/rest_v1/page/html/13_Σεπτεμβρίου", "1309", browser)
+
+await browser.close();
+// console.log('Months have been uploaded');
+// process.exit(0);
+
 
 
 

@@ -6,6 +6,7 @@ export async function eventUploader(day, list) {
       await setDoc(doc(db, "events", `${day}${eventNumber > 9 ? "":"0"}${eventNumber}`), {
         day,
         anchor: event.anchor,
+        text: event.text,
         imageUrl: event.imageUrl,
         year: event.year,
         id: event.id,
